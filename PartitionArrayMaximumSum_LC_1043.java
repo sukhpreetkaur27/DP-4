@@ -130,4 +130,51 @@ public class PartitionArrayMaximumSum_LC_1043 {
         return dp[n];
     }
 
+    private class Pair {
+        int max;
+        int partitionLength;
+
+        Pair(int max, int partitionLength) {
+            this.max = max;
+            this.partitionLength = partitionLength;
+        }
+    }
+
+    // Same as House Coloring Pattern
+    public int[] maxSumAfterPartitioning_path(int[] arr, int k) {
+        int n = arr.length;
+        // shifting of indices to handle <0 i.e. -1 index
+        int[] dp = new int[n + 1];
+        int[] path = new int[n];
+        Pair[] maxPartition = new Pair[n];
+
+        dp[1] = arr[0];
+        maxPartition[0] = new Pair(arr[0], 1);
+        for (int index = 2; index <= n; index++) {
+            int maxSum = 0;
+            int max = arr[index - 1];
+            int maxPartitionLength = 1;
+
+            for (int j = 1; j <= k && index - j >= 0; j++) {
+                max = Math.max(max, arr[index - j]);
+                if (maxSum < max * j + dp[index - j]) {
+                    maxPartitionLength = j;
+                    maxSum = max * j + dp[index - j];
+                }
+            }
+            dp[index] = maxSum;
+            maxPartition[index - 1] = new Pair(max, maxPartitionLength);
+        }
+
+        path[0] = arr[0];
+        for (int i = n - 1; i > 0;) {
+            Pair pair = maxPartition[i];
+            for (int l = 1; l <= pair.partitionLength; l++) {
+                path[i] = pair.max;
+                i--;
+            }
+        }
+        return path;
+    }
+
 }
